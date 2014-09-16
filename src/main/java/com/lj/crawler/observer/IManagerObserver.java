@@ -1,6 +1,9 @@
 package com.lj.crawler.observer;
 
 import java.util.List;
+import java.util.Map;
+
+import com.lj.crawler.bean.Task;
 
 
 
@@ -13,10 +16,12 @@ import java.util.List;
  * 
  * @author Li Jing
  *
- * @param <R>
- * @param <L>
+ *
+ * @param
  */
-public interface IManagerObserver<R,L extends List<R>>
+public interface IManagerObserver<T extends Task,R,M extends Map<T,List<R>>>
 {
-	public void update(String taskID,L list);
+	public void update(String taskID,M map);
+	
 }
+

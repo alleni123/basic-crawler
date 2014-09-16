@@ -1,12 +1,17 @@
 package com.lj.crawler;
 
-import com.lj.crawler.manager.Manager;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.lj.crawler.bean.Task;
+
 
 
 
 /**
  * The class provides a skeletal implementation of the Crawlable interface to minimize the effort required to implement
- * this interface. 
+ * that interface. 
  * To implement a crawler, user only needs to(and must) implement the method R crawl().
  * 
  * The interface Crawlable is implemented into the abstract class Manager to accomplish multiple-thread job.
@@ -20,7 +25,7 @@ import com.lj.crawler.manager.Manager;
  * @param <T> Task type which is set as paramter for a crawl job.
  * @param <R> Result crawled by a crawler at a time.
  */
-public abstract  class AbstractCrawler<T,R>  implements Crawlable<T,R>
+public abstract  class AbstractCrawler<T extends Task,R>  implements Crawlable<T,R>
 {
 	protected boolean running;
 	
@@ -34,6 +39,9 @@ public abstract  class AbstractCrawler<T,R>  implements Crawlable<T,R>
 	protected AbstractCrawler()
 	{
 	}
+	
+	
+	
 	
 
 	public boolean isRunning()
@@ -75,14 +83,22 @@ public abstract  class AbstractCrawler<T,R>  implements Crawlable<T,R>
 	public void setTask(T task) {
 		this.taskCounter++;
 		this.task=task;
+		
+		//这里暂且认为setTask之后就立即执行任务
+		//We assume that a task is commited sequentially after invocation of method setTask.
+		this.task.setStart(new Date());
 	};
  
 
 	@Override
-	public R call() throws Exception
+	public Map<T,R> call() throws Exception
 	{
 		R r=crawl();
-		return r;
+		this.task.setEnd(new Date());
+		this.task.setFinished(0);
+		Map<T,R>map=new HashMap<T,R>();
+		map.put(task, r);
+		return map;
 	}
  
 	
